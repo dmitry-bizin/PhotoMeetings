@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <com.photomeetings.views.DelayAutoCompleteTextView
+        android:id="@+id/autoCompleteTextViewAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/address"
+        android:inputType="textAutoComplete"
+        android:padding="10sp"
+        android:textSize="16sp" />
+
+    <CheckBox
+        android:id="@+id/searchForCurrentPosition"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:layout_below="@id/autoCompleteTextViewAddress"
+        android:checked="false"
+        android:padding="10sp"
+        android:text="@string/searchForCurrentPosition"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/radiusLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchForCurrentPosition"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10sp"
+        android:orientation="horizontal"
+        android:padding="10sp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10sp"
+            android:text="@string/radius"
+            android:textColor="@color/vk_black"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/spinnerRadius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/radiusList"
+            android:padding="10sp"
+            android:spinnerMode="dialog" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:padding="10sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radiusLayout"
+        android:layout_centerHorizontal="true"
+        android:padding="10sp"
+        android:text="@string/save" />
+
+</RelativeLayout>

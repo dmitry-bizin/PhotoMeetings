@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">ФотоЗнакомства</string>
+    <integer name="com_vk_sdk_AppId">5676694</integer>
+    <string name="action_settings">Настройки</string>
+    <string name="com_vk_sdk_ApiVersion">5.80</string>
+    <string name="nothingFound">Ничего не найдено!</string>
+    <string name="address">Адрес поиска</string>
+    <string name="radius">Радиус поиска (м)</string>
+    <string name="save">Сохранить</string>
+    <string name="errorText">Произошла ошибка! Попробуйте позже…</string>
+    <string name="searchForCurrentPosition">Искать для текущего местоположения</string>
+    <string-array name="radiusList">
+        <item>10</item>
+        <item>100</item>
+        <item>800</item>
+        <item>5000</item>
+        <item>6000</item>
+        <item>50000</item>
+    </string-array>
+</resources>
