@@ -74,7 +74,9 @@ public abstract class GeoService {
                     float lat = Float.parseFloat(pos.split(" ")[1]);
                     result.add(new Point(lat, lng, formattedAddress));
                 }
+                responseBody.close();
             }
+            response.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
