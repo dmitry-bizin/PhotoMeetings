@@ -51,8 +51,7 @@ public class GridViewFragment extends Fragment {
         View gridViewFragment = inflater.inflate(R.layout.grid_view_fragment, container, false);
         ProgressBar progressBarGridView = gridViewFragment.findViewById(R.id.progressBarGridView);
         TextView nothingFoundTextView = gridViewFragment.findViewById(R.id.nothingFoundTextView);
-        TextView errorTextView = gridViewFragment.findViewById(R.id.errorTextView);
-        searchPhotosService.setViews(progressBarGridView, nothingFoundTextView, errorTextView);
+        searchPhotosService.setViews(progressBarGridView, nothingFoundTextView);
         prepareGridView(gridViewFragment);
         return gridViewFragment;
     }
@@ -82,6 +81,7 @@ public class GridViewFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (!gridViewAdapter.isLoading()) {
+                    gridViewAdapter.setAllDownloaded(false);
                     searchPhotosService.update(SettingsService.getAddress(getContext()), SettingsService.getRadius(getContext()));
                     searchPhotosService.vkPhotos(null, swipeRefreshLayout, true);
                 } else {

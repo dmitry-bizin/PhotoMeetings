@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,7 +37,6 @@ public class SearchPhotosService implements Serializable {
     private transient ProgressBar progressBarGridView;
     private GridViewAdapter gridViewAdapter;
     private TextView nothingFoundTextView;
-    private TextView errorTextView;
 
     public SearchPhotosService(Point address, String radius, GridViewAdapter gridViewAdapter) {
         this.address = address;
@@ -83,13 +83,25 @@ public class SearchPhotosService implements Serializable {
                             if (gridViewAdapter.isEmpty()) {
                                 nothingFoundTextView.setVisibility(View.VISIBLE);
                             } else {
+                                //todo: https://vk.com/bugtracker?act=show&id=72826
+                                //todo: https://vk.com/bugtracker?act=show&id=72828
+                                //todo: https://vk.com/bugtracker?act=show&id=72830
+
+                                //fixme: баг в VK API: при определенных оффсетах возвращает пустой список, притом что фотографии ещё имеются (их можно получить при других оффсетах и count)
+                                //fixme: т.о. не все фотографии выгружаются...
+                                //fixme: справедливо для сочетания полей offset и count при фиксированных других полях
                                 gridViewAdapter.setAllDownloaded(true);
                             }
                         } else {
                             nothingFoundTextView.setVisibility(View.GONE);
-                            errorTextView.setVisibility(View.GONE);
                             offset += vkPhotos.size();
-                            gridViewAdapter.addAll(vkPhotos);
+                            //fixme: баг VK API: возвращаются дублированные фото (при определенных сочетаниях полей offset и count)
+                            //fixme: возможно, связан с багом выше
+                            for (VKPhoto vkPhoto : vkPhotos) {
+                                if (!gridViewAdapter.contains(vkPhoto)) {
+                                    gridViewAdapter.add(vkPhoto);
+                                }
+                            }
                             gridViewAdapter.notifyDataSetChanged();
                             if (photoPagerAdapter != null) {
                                 photoPagerAdapter.notifyDataSetChanged();
@@ -117,9 +129,14 @@ public class SearchPhotosService implements Serializable {
                 public void onError(VKError error) {
                     super.onError(error);
                     progressBarGridView.setVisibility(View.GONE);
-                    gridViewAdapter.clear();
-                    gridViewAdapter.notifyDataSetChanged();
-                    errorTextView.setVisibility(View.VISIBLE);
+                    gridViewAdapter.setLoading(false);
+                    if (error.errorCode == VKError.VK_API_ERROR) {
+                        if (error.apiError.errorCode == 6) {
+                            Toast.makeText(gridViewAdapter.getContext(), "Слишком частое обновление!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(gridViewAdapter.getContext(), error.apiError.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
 
                 @Override
@@ -136,10 +153,9 @@ public class SearchPhotosService implements Serializable {
     /**
      * Не забывать вызвать после конструктора!
      */
-    public void setViews(ProgressBar progressBarGridView, TextView nothingFoundTextView, TextView errorTextView) {
+    public void setViews(ProgressBar progressBarGridView, TextView nothingFoundTextView) {
         this.progressBarGridView = progressBarGridView;
         this.nothingFoundTextView = nothingFoundTextView;
-        this.errorTextView = errorTextView;
     }
 
     public void update(Point address, String radius) {

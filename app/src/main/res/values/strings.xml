@@ -7,7 +7,6 @@
     <string name="address">Адрес поиска</string>
     <string name="radius">Радиус поиска (м)</string>
     <string name="save">Сохранить</string>
-    <string name="errorText">Произошла ошибка! Попробуйте позже…</string>
     <string name="searchForCurrentPosition">Искать для текущего местоположения</string>
     <string-array name="radiusList">
         <item>10</item>

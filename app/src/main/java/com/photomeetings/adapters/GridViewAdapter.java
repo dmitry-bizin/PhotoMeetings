@@ -26,11 +26,13 @@ public class GridViewAdapter extends ArrayAdapter<VKPhoto> implements Serializab
     private int layoutResourceId;
     private boolean isLoading = false;
     private boolean isAllDownloaded = false;
+    private List<VKPhoto> vkPhotos;
 
     public GridViewAdapter(Context context, int layoutResourceId, List<VKPhoto> vkPhotos) {
         super(context, layoutResourceId, vkPhotos);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
+        this.vkPhotos = vkPhotos;
     }
 
     @NonNull
@@ -71,6 +73,10 @@ public class GridViewAdapter extends ArrayAdapter<VKPhoto> implements Serializab
 
     public void setLoading(boolean loading) {
         isLoading = loading;
+    }
+
+    public boolean contains(VKPhoto vkPhoto) {
+        return vkPhotos.contains(vkPhoto);
     }
 
     static class MiniatureView {

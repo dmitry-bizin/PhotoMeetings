@@ -165,6 +165,23 @@ public class VKPhoto implements Serializable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        VKPhoto vkPhoto = (VKPhoto) o;
+        return id.equals(vkPhoto.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     public String getAddress() {
         return address;
     }
