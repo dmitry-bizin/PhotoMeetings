@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.photomeetings.R;
@@ -33,6 +32,8 @@ import com.photomeetings.model.Point;
 import com.photomeetings.services.SettingsService;
 import com.photomeetings.tasks.AsyncGeocodingTask;
 import com.photomeetings.views.DelayAutoCompleteTextView;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
@@ -50,22 +51,23 @@ import static com.photomeetings.services.SettingsService.SETTINGS;
 public class SettingsFragment extends Fragment {
 
     private DelayAutoCompleteTextView autoCompleteTextViewAddress;
-    private Spinner spinnerRadius;
     private SharedPreferences sharedPreferences;
     private ProgressBar progressBar;
     private boolean settingsWasChanged;
     private CheckBox searchForCurrentPosition;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private DiscreteSeekBar discreteSeekBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.settings_fragment, container, false);
         progressBar = view.findViewById(R.id.progressBar);
         sharedPreferences = getActivity().getSharedPreferences(SETTINGS, MODE_PRIVATE);
+        discreteSeekBar = view.findViewById(R.id.discreteSeekBar);
         prepareAutoCompleteViewAddress(view);
         prepareSearchForCurrentPosition(view);
-        prepareRadius(view);
+        prepareRadius();
         Button buttonSave = view.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +75,7 @@ public class SettingsFragment extends Fragment {
                 if (!searchForCurrentPosition.isChecked()) {
                     new AsyncGeocodingTask(String.valueOf(autoCompleteTextViewAddress.getText()), sharedPreferences).execute();
                 }
-                sharedPreferences.edit().putString(RADIUS, String.valueOf(spinnerRadius.getSelectedItem().toString())).apply();
+                sharedPreferences.edit().putString(RADIUS, String.valueOf(discreteSeekBar.getProgress())).apply();
                 sharedPreferences.edit().putBoolean(SEARCH_FOR_CURRENT_POSITION, searchForCurrentPosition.isChecked()).apply();
                 setSettingsWasChanged(true);
             }
@@ -124,35 +126,8 @@ public class SettingsFragment extends Fragment {
         });
     }
 
-    private void prepareRadius(View view) {
-        spinnerRadius = view.findViewById(R.id.spinnerRadius);
-        spinnerRadius.setSelection(getPositionByRadius(sharedPreferences.getString(RADIUS, DEFAULT_RADIUS)));
-    }
-
-    private int getPositionByRadius(String radius) {
-        switch (radius) {
-            case "10": {
-                return 0;
-            }
-            case "100": {
-                return 1;
-            }
-            case "800": {
-                return 2;
-            }
-            case "5000": {
-                return 3;
-            }
-            case "6000": {
-                return 4;
-            }
-            case "50000": {
-                return 5;
-            }
-            default: {
-                return 1;
-            }
-        }
+    private void prepareRadius() {
+        discreteSeekBar.setProgress(Integer.parseInt(sharedPreferences.getString(RADIUS, DEFAULT_RADIUS)));
     }
 
     private void requestPermissionsIfNeeded() {
