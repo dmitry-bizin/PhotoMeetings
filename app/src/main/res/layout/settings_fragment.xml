@@ -25,12 +25,17 @@
 
     <LinearLayout
         android:id="@+id/radiusLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/searchForCurrentPosition"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10sp"
-        android:orientation="horizontal"
+        android:layout_marginBottom="10sp"
+        android:layout_marginEnd="10sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="10sp"
+        android:orientation="vertical"
         android:padding="10sp">
 
         <TextView
@@ -41,13 +46,10 @@
             android:textColor="@color/vk_black"
             android:textSize="16sp" />
 
-        <Spinner
-            android:id="@+id/spinnerRadius"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/radiusList"
-            android:padding="10sp"
-            android:spinnerMode="dialog" />
+        <com.ramotion.fluidslider.FluidSlider
+            android:id="@+id/fluidSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -59,8 +61,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:padding="10sp"
-        android:visibility="gone" />
+        android:padding="10sp" />
 
     <Button
         android:id="@+id/buttonSave"
