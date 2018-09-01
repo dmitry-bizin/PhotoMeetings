@@ -93,6 +93,12 @@ public class GridViewFragment extends Fragment {
         locationManager.removeUpdates(locationListener);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        checkLocationPermission();
+    }
+
     private void prepareGridView(View gridViewFragment) {
         final GridView gridView = gridViewFragment.findViewById(R.id.gridView);
         gridView.setAdapter(gridViewAdapter);

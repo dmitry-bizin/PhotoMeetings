@@ -39,7 +39,9 @@ public abstract class GeoService {
                             .getAsJsonObject("GeocoderMetaData")
                             .getAsJsonObject("Address")
                             .get("formatted").getAsString();
+                    responseBody.close();
                 }
+                response.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

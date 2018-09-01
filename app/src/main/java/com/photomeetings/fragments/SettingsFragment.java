@@ -106,13 +106,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    boolean permissionGrantedFineLocation = checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-                    boolean permissionGrantedCoarseLocation = checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-                    if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-                    } else {
-                        SettingsService.requestLastKnownLocation(context, locationManager, locationListener, searchForCurrentPosition);
-                    }
+                    checkLocationPermission();
                 } else {
                     locationManager.removeUpdates(locationListener);
                 }
@@ -122,10 +116,28 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    private void checkLocationPermission() {
+        boolean permissionGrantedFineLocation = checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        boolean permissionGrantedCoarseLocation = checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+        } else {
+            SettingsService.requestLastKnownLocation(context, locationManager, locationListener, searchForCurrentPosition);
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
         locationManager.removeUpdates(locationListener);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (searchForCurrentPosition.isChecked()) {
+            checkLocationPermission();
+        }
     }
 
     private void prepareRadius() {
