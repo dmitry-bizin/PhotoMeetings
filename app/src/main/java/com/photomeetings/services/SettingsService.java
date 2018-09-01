@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.photomeetings.R;
 import com.photomeetings.model.Point;
 
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
@@ -75,11 +76,11 @@ public abstract class SettingsService {
 
     public static void saveCurrentLocation(@Nullable Location location, Context context) {
         if (location != null) {
-            String provider = location.getProvider().equals(LocationManager.GPS_PROVIDER) ? "GPS" : "WiFi и сеть";
+            String provider = location.getProvider().equals(LocationManager.GPS_PROVIDER) ? context.getString(R.string.gps) : context.getString(R.string.wifi_network);
             Point savedAddress = getFullAddress(context);
             if (Math.abs(savedAddress.getLat() - location.getLatitude()) >= EPS
                     || Math.abs(savedAddress.getLng() - location.getLongitude()) >= EPS) {
-                Toast.makeText(context, "Местоположение изменено (" + provider + ")!\nОбновите экран поиска фотографий!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, context.getString(R.string.changed_location_1) + provider + context.getString(R.string.changed_location_2), Toast.LENGTH_LONG).show();
                 SharedPreferences sharedPreferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
                 sharedPreferences.edit().putFloat(LAT, (float) location.getLatitude()).apply();
                 sharedPreferences.edit().putFloat(LNG, (float) location.getLongitude()).apply();
@@ -127,15 +128,15 @@ public abstract class SettingsService {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-            alertDialog.setTitle("Включение службы геолокации");
-            alertDialog.setMessage("Для поиска фотографий по текущему местоположению включите службу определения геолокации в настройках (для более точного поиска включите GPS)");
-            alertDialog.setPositiveButton("Настройки местоположения", new DialogInterface.OnClickListener() {
+            alertDialog.setTitle(R.string.enable_geolocation);
+            alertDialog.setMessage(R.string.enable_geolocation_message);
+            alertDialog.setPositiveButton(R.string.settings_geolocation, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     context.startActivity(intent);
                 }
             });
-            alertDialog.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            alertDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                     saveSearchForCurrentPosition(false, context);

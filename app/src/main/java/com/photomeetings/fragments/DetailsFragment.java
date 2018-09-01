@@ -144,7 +144,7 @@ public class DetailsFragment extends Fragment {
             @Override
             public void onError(Exception e) {
                 progressBarDetailsView.setVisibility(View.GONE);
-                Toast.makeText(context, "Произошла ошибка при загрузке фотографии!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, R.string.load_photo_error, Toast.LENGTH_LONG).show();
             }
 
         });

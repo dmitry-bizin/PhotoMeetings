@@ -8,6 +8,17 @@
     <string name="radius">Радиус поиска (м)</string>
     <string name="save">Сохранить</string>
     <string name="searchForCurrentPosition">Искать для текущего местоположения</string>
+    <string name="need_vk_authorization">Для работы приложения необходима авторизация ВКонтакте!</string>
+    <string name="load_photo_error">Произошла ошибка при загрузке фотографии!</string>
+    <string name="frequent_updates">Слишком частое обновление!</string>
+    <string name="gps">GPS</string>
+    <string name="wifi_network">WiFi и сеть</string>
+    <string name="changed_location_1">Местоположение изменено (</string>
+    <string name="changed_location_2">)! Обновите экран поиска фотографий!</string>
+    <string name="enable_geolocation">Включение службы геолокации</string>
+    <string name="enable_geolocation_message">Для поиска фотографий по текущему местоположению включите службу определения геолокации в настройках (для более точного поиска включите GPS)</string>
+    <string name="settings_geolocation">Настройки местоположения</string>
+    <string name="cancel">Отмена</string>
     <string-array name="radiusList">
         <item>10</item>
         <item>100</item>

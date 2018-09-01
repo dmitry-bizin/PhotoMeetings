@@ -20,6 +20,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
+    private static final String GRID_TAG = "grid";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Fragment gridViewFragment = new GridViewFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
-        fragmentTransaction.replace(R.id.fragment, gridViewFragment, "grid");
+        fragmentTransaction.replace(R.id.fragment, gridViewFragment, GRID_TAG);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             public void onError(VKError error) {
                 // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
                 if (error.errorCode == VKError.VK_CANCELED) {
-                    Toast.makeText(getBaseContext(), "Для работы приложения необходима авторизация ВКонтакте!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), R.string.need_vk_authorization, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getBaseContext(), error.toString(), Toast.LENGTH_LONG).show();
                 }
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
     private boolean containsGrid(List<Fragment> fragments) {
         for (Fragment fragment : fragments) {
-            if ("grid".equals(fragment.getTag())) {
+            if (GRID_TAG.equals(fragment.getTag())) {
                 return true;
             }
         }

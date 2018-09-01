@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.photomeetings.R;
 import com.photomeetings.adapters.GridViewAdapter;
 import com.photomeetings.adapters.PhotoPagerAdapter;
 import com.photomeetings.model.Point;
@@ -132,7 +133,7 @@ public class SearchPhotosService implements Serializable {
                     gridViewAdapter.setLoading(false);
                     if (error.errorCode == VKError.VK_API_ERROR) {
                         if (error.apiError.errorCode == 6) {
-                            Toast.makeText(gridViewAdapter.getContext(), "Слишком частое обновление!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(gridViewAdapter.getContext(), R.string.frequent_updates, Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(gridViewAdapter.getContext(), error.apiError.toString(), Toast.LENGTH_LONG).show();
                         }
