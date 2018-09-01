@@ -33,7 +33,7 @@ public abstract class SettingsService {
     private static final String DEFAULT_ADDRESS = "";
     private static final String SEARCH_FOR_CURRENT_POSITION = "searchForCurrentPosition";
     private static final boolean DEFAULT_SEARCH_FOR_CURRENT_POSITION = true;
-    private static final float EPS = 0.0001f;
+    private static final float EPS_M = 50.0f;//метры
 
     public static Point getFullAddress(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
@@ -78,8 +78,9 @@ public abstract class SettingsService {
         if (location != null) {
             String provider = location.getProvider().equals(LocationManager.GPS_PROVIDER) ? context.getString(R.string.gps) : context.getString(R.string.wifi_network);
             Point savedAddress = getFullAddress(context);
-            if (Math.abs(savedAddress.getLat() - location.getLatitude()) >= EPS
-                    || Math.abs(savedAddress.getLng() - location.getLongitude()) >= EPS) {
+            float[] results = new float[1];
+            Location.distanceBetween(savedAddress.getLat(), savedAddress.getLng(), location.getLatitude(), location.getLongitude(), results);
+            if (results[0] >= EPS_M) {
                 Toast.makeText(context, context.getString(R.string.changed_location_1) + provider + context.getString(R.string.changed_location_2), Toast.LENGTH_LONG).show();
                 SharedPreferences sharedPreferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
                 sharedPreferences.edit().putFloat(LAT, (float) location.getLatitude()).apply();

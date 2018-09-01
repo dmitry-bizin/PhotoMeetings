@@ -122,6 +122,12 @@ public class SettingsFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(locationListener);
+    }
+
     private void prepareRadius() {
         discreteSeekBar.setProgress(Integer.parseInt(SettingsService.getRadius(context)));
     }

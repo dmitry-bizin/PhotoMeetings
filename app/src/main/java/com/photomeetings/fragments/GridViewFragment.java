@@ -87,6 +87,12 @@ public class GridViewFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        locationManager.removeUpdates(locationListener);
+    }
+
     private void prepareGridView(View gridViewFragment) {
         final GridView gridView = gridViewFragment.findViewById(R.id.gridView);
         gridView.setAdapter(gridViewAdapter);

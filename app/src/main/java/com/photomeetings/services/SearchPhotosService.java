@@ -159,8 +159,8 @@ public class SearchPhotosService implements Serializable {
         this.nothingFoundTextView = nothingFoundTextView;
     }
 
-    public void update(Point address, String radius) {
-        this.fullAddress = address;
+    public void update(Point fullAddress, String radius) {
+        this.fullAddress = fullAddress;
         this.radius = radius;
         this.offset = 0;
     }
