@@ -32,14 +32,14 @@ public class SearchPhotosService implements Serializable {
 
     private static final int COUNT = 100;// 100-1000
     private int offset;
-    private Point address;
+    private Point fullAddress;
     private String radius;
     private transient ProgressBar progressBarGridView;
     private GridViewAdapter gridViewAdapter;
     private TextView nothingFoundTextView;
 
-    public SearchPhotosService(Point address, String radius, GridViewAdapter gridViewAdapter) {
-        this.address = address;
+    public SearchPhotosService(Point fullAddress, String radius, GridViewAdapter gridViewAdapter) {
+        this.fullAddress = fullAddress;
         this.offset = 0;
         this.radius = radius;
         this.gridViewAdapter = gridViewAdapter;
@@ -52,8 +52,8 @@ public class SearchPhotosService implements Serializable {
         if (vkAccessToken != null && !vkAccessToken.isExpired()) {
             VKRequest request = new VKRequest("photos.search",
                     VKParameters.from(
-                            VKApiConst.LAT, address.getLat(),
-                            VKApiConst.LONG, address.getLng(),
+                            VKApiConst.LAT, fullAddress.getLat(),
+                            VKApiConst.LONG, fullAddress.getLng(),
                             VKApiConst.COUNT, COUNT,
                             VKApiConst.OFFSET, offset,
                             "radius", radius,
@@ -159,7 +159,7 @@ public class SearchPhotosService implements Serializable {
     }
 
     public void update(Point address, String radius) {
-        this.address = address;
+        this.fullAddress = address;
         this.radius = radius;
         this.offset = 0;
     }

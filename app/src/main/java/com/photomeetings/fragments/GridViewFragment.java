@@ -1,6 +1,13 @@
 package com.photomeetings.fragments;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -20,12 +27,15 @@ import android.widget.TextView;
 import com.photomeetings.R;
 import com.photomeetings.adapters.GridViewAdapter;
 import com.photomeetings.adapters.PhotoPagerAdapter;
+import com.photomeetings.listeners.GeoLocationListener;
 import com.photomeetings.model.vk.VKPhoto;
 import com.photomeetings.services.SearchPhotosService;
 import com.photomeetings.services.SettingsService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class GridViewFragment extends Fragment {
 
@@ -34,6 +44,8 @@ public class GridViewFragment extends Fragment {
     private SearchPhotosService searchPhotosService;
     private SettingsFragment settingsFragment;
     private List<VKPhoto> vkPhotos;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,12 +54,15 @@ public class GridViewFragment extends Fragment {
         vkPhotos = new ArrayList<>();
         gridViewAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, vkPhotos);
         photoPagerAdapter = new PhotoPagerAdapter(getFragmentManager(), vkPhotos, searchPhotosService);
-        searchPhotosService = new SearchPhotosService(SettingsService.getAddress(getContext()), SettingsService.getRadius(getContext()), gridViewAdapter);
+        searchPhotosService = new SearchPhotosService(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()), gridViewAdapter);
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new GeoLocationListener(getContext(), locationManager);
         setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        checkLocationPermission();
         View gridViewFragment = inflater.inflate(R.layout.grid_view_fragment, container, false);
         ProgressBar progressBarGridView = gridViewFragment.findViewById(R.id.progressBarGridView);
         TextView nothingFoundTextView = gridViewFragment.findViewById(R.id.nothingFoundTextView);
@@ -82,7 +97,7 @@ public class GridViewFragment extends Fragment {
             public void onRefresh() {
                 if (!gridViewAdapter.isLoading()) {
                     gridViewAdapter.setAllDownloaded(false);
-                    searchPhotosService.update(SettingsService.getAddress(getContext()), SettingsService.getRadius(getContext()));
+                    searchPhotosService.update(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()));
                     searchPhotosService.vkPhotos(null, swipeRefreshLayout, true);
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
@@ -113,8 +128,20 @@ public class GridViewFragment extends Fragment {
         });
         if (settingsFragment.isSettingsWasChanged()) {
             settingsFragment.setSettingsWasChanged(false);
-            searchPhotosService.update(SettingsService.getAddress(getContext()), SettingsService.getRadius(getContext()));
+            searchPhotosService.update(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()));
             searchPhotosService.vkPhotos(null, null, true);
+        }
+    }
+
+    private void checkLocationPermission() {
+        if (SettingsService.isSearchForCurrentPosition(getContext())) {
+            boolean permissionGrantedFineLocation = checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            boolean permissionGrantedCoarseLocation = checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+            } else {
+                SettingsService.requestLastKnownLocation(getContext(), locationManager, locationListener, null);
+            }
         }
     }
 
@@ -138,6 +165,35 @@ public class GridViewFragment extends Fragment {
         fragmentTransaction.replace(R.id.fragment, settingsFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 0 && grantResults.length == 2) {
+            boolean permissionGrantedFineLocation = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            boolean permissionGrantedCoarseLocation = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+            if (permissionGrantedFineLocation) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1_000, Integer.parseInt(SettingsService.getRadius(getContext())), locationListener);
+            }
+            if (permissionGrantedCoarseLocation) {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1_000, Integer.parseInt(SettingsService.getRadius(getContext())), locationListener);
+            }
+            if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
+                SettingsService.saveSearchForCurrentPosition(false, getContext());
+                return;
+            }
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                SettingsService.saveCurrentLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER), getContext());
+            } else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                SettingsService.saveCurrentLocation(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER), getContext());
+            } else {
+                SettingsService.requestToEnableGeoLocationService(getContext(), locationManager, null);
+            }
+        } else {
+            SettingsService.saveSearchForCurrentPosition(false, getContext());
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 }

@@ -1,41 +1,27 @@
 package com.photomeetings.tasks;
 
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.photomeetings.model.Point;
 import com.photomeetings.services.GeoService;
+import com.photomeetings.services.SettingsService;
 
 import java.util.List;
-
-import static com.photomeetings.services.SettingsService.ADDRESS;
-import static com.photomeetings.services.SettingsService.DEFAULT_ADDRESS;
-import static com.photomeetings.services.SettingsService.DEFAULT_LAT;
-import static com.photomeetings.services.SettingsService.DEFAULT_LNG;
-import static com.photomeetings.services.SettingsService.LAT;
-import static com.photomeetings.services.SettingsService.LNG;
 
 public class AsyncGeocodingTask extends AsyncTask<Void, Void, List<Point>> {
 
     private String address;
-    private SharedPreferences sharedPreferences;
+    private Context context;
 
-    public AsyncGeocodingTask(String address, SharedPreferences sharedPreferences) {
+    public AsyncGeocodingTask(String address, Context context) {
         this.address = address;
-        this.sharedPreferences = sharedPreferences;
+        this.context = context;
     }
 
     @Override
     protected void onPostExecute(List<Point> points) {
-        Point point;
-        if (!points.isEmpty()) {
-            point = points.get(0);
-        } else {
-            point = new Point(DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ADDRESS);
-        }
-        sharedPreferences.edit().putString(ADDRESS, point.getAddress()).apply();
-        sharedPreferences.edit().putFloat(LAT, point.getLat()).apply();
-        sharedPreferences.edit().putFloat(LNG, point.getLng()).apply();
+        SettingsService.saveFullAddress(points.isEmpty() ? null : points.get(0), context);
     }
 
     @Override
