@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:fontFamily="sans-serif-condensed"
-        android:text="@string/nothingFound"
+        android:text="@string/nothing_found"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:visibility="gone" />

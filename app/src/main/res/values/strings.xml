@@ -3,11 +3,11 @@
     <integer name="com_vk_sdk_AppId">5676694</integer>
     <string name="action_settings">Настройки</string>
     <string name="com_vk_sdk_ApiVersion">5.80</string>
-    <string name="nothingFound">Ничего не найдено!</string>
+    <string name="nothing_found">Ничего не найдено!</string>
     <string name="address">Адрес поиска</string>
     <string name="radius">Радиус поиска (м)</string>
     <string name="save">Сохранить</string>
-    <string name="searchForCurrentPosition">Искать для текущего местоположения</string>
+    <string name="search_for_current_position">Искать для текущего местоположения</string>
     <string name="need_vk_authorization">Для работы приложения необходима авторизация ВКонтакте!</string>
     <string name="load_photo_error">Произошла ошибка при загрузке фотографии!</string>
     <string name="frequent_updates">Слишком частое обновление!</string>
