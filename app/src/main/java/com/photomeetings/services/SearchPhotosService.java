@@ -93,7 +93,7 @@ public class SearchPhotosService implements Serializable {
                         //fixme: баг VK API: возвращаются дублированные фото (при определенных сочетаниях полей offset и count)
                         //fixme: возможно, связан с багом выше
                         for (VKPhoto vkPhoto : vkPhotos) {
-                            if (!gridViewAdapter.contains(vkPhoto)) {
+                            if (!gridViewAdapter.contains(vkPhoto) && !vkPhoto.isNullLatLng()) {
                                 gridViewAdapter.add(vkPhoto);
                             }
                         }

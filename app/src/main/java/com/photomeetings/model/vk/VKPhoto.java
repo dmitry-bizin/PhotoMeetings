@@ -165,6 +165,10 @@ public class VKPhoto implements Serializable {
         }
     }
 
+    public boolean isNullLatLng() {
+        return lat == null || lng == null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
