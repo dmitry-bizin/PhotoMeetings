@@ -27,7 +27,7 @@ public class PhotoPagerAdapter extends FragmentStatePagerAdapter implements Seri
     @Override
     public Fragment getItem(int position) {
         if (position == getCount() - 1) {
-            searchPhotosService.vkPhotos(this, null, false);
+            searchPhotosService.vkPhotos(this, null);
         }
         DetailsFragment detailsFragment = new DetailsFragment();
         Bundle bundle = new Bundle();

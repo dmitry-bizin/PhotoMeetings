@@ -109,8 +109,9 @@ public class GridViewFragment extends Fragment {
             public void onRefresh() {
                 if (!gridViewAdapter.isLoading()) {
                     gridViewAdapter.setAllDownloaded(false);
+                    gridViewAdapter.clear();
                     searchPhotosService.update(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()));
-                    searchPhotosService.vkPhotos(null, swipeRefreshLayout, true);
+                    searchPhotosService.vkPhotos(null, swipeRefreshLayout);
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
                 }
@@ -129,7 +130,7 @@ public class GridViewFragment extends Fragment {
                 if (firstVisibleItem + visibleItemCount == totalItemCount
                         && !gridViewAdapter.isLoading()
                         && !gridViewAdapter.isAllDownloaded()) {
-                    searchPhotosService.vkPhotos(null, null, false);
+                    searchPhotosService.vkPhotos(null, null);
                 }
             }
         });
@@ -140,8 +141,9 @@ public class GridViewFragment extends Fragment {
         });
         if (settingsFragment.isSettingsWasChanged()) {
             settingsFragment.setSettingsWasChanged(false);
+            gridViewAdapter.clear();
             searchPhotosService.update(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()));
-            searchPhotosService.vkPhotos(null, null, true);
+            searchPhotosService.vkPhotos(null, null);
         }
     }
 

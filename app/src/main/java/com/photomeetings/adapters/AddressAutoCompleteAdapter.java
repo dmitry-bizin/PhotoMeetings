@@ -8,11 +8,13 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.photomeetings.R;
 import com.photomeetings.model.Point;
 import com.photomeetings.services.GeoService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +82,13 @@ public class AddressAutoCompleteAdapter extends BaseAdapter implements Filterabl
     }
 
     private List<Point> findPoints(String address) {
-        return GeoService.geocoding(address);
+        List<Point> points = new ArrayList<>();
+        try {
+            points.addAll(GeoService.geocoding(address));
+        } catch (IOException e) {
+            Toast.makeText(context, R.string.geo_network_error, Toast.LENGTH_LONG).show();
+        }
+        return points;
     }
 
 }

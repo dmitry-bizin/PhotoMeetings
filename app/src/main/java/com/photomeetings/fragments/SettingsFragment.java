@@ -23,7 +23,6 @@ import com.photomeetings.adapters.AddressAutoCompleteAdapter;
 import com.photomeetings.listeners.GeoLocationListener;
 import com.photomeetings.model.Point;
 import com.photomeetings.services.SettingsService;
-import com.photomeetings.tasks.AsyncGeocodingTask;
 import com.photomeetings.views.DelayAutoCompleteTextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -56,9 +55,6 @@ public class SettingsFragment extends Fragment {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!searchForCurrentPosition.isChecked()) {
-                    new AsyncGeocodingTask(String.valueOf(autoCompleteTextViewAddress.getText()), context).execute();
-                }
                 SettingsService.saveRadius(context, String.valueOf(discreteSeekBar.getProgress()));
                 SettingsService.saveSearchForCurrentPosition(searchForCurrentPosition.isChecked(), context);
                 setSettingsWasChanged(true);
@@ -84,8 +80,12 @@ public class SettingsFragment extends Fragment {
         autoCompleteTextViewAddress.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Point point = (Point) adapterView.getItemAtPosition(position);
-                autoCompleteTextViewAddress.setText(point.getAddress());
+                Point fullAddress = (Point) adapterView.getItemAtPosition(position);
+                //fixme: происходит сохранение без нажатия кнопки сохранить.
+                //fixme: когда кнопка сохранить будет убрана, не забыть сохранять любой контрол настроек при его изменении
+                //fixme: и самое главное - менять settingsWasChanged!!!
+                SettingsService.saveFullAddress(fullAddress, context);
+                autoCompleteTextViewAddress.setText(fullAddress.getAddress());
             }
         });
     }

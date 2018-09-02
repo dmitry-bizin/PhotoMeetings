@@ -47,108 +47,104 @@ public class SearchPhotosService implements Serializable {
     }
 
     public void vkPhotos(@Nullable final PhotoPagerAdapter photoPagerAdapter,
-                         @Nullable final SwipeRefreshLayout swipeRefreshLayout,
-                         final boolean isClearAdapter) {
+                         @Nullable final SwipeRefreshLayout swipeRefreshLayout) {
         final VKAccessToken vkAccessToken = VKAccessToken.currentToken();
-        if (vkAccessToken != null && !vkAccessToken.isExpired()) {
-            VKRequest request = new VKRequest("photos.search",
-                    VKParameters.from(
-                            VKApiConst.LAT, fullAddress.getLat(),
-                            VKApiConst.LONG, fullAddress.getLng(),
-                            VKApiConst.COUNT, COUNT,
-                            VKApiConst.OFFSET, offset,
-                            "radius", radius,
-                            VKApiConst.ACCESS_TOKEN, vkAccessToken.accessToken,
-                            VKApiConst.VERSION, "5.80"
-                    ));
+        VKRequest request = new VKRequest("photos.search",
+                VKParameters.from(
+                        VKApiConst.LAT, fullAddress.getLat(),
+                        VKApiConst.LONG, fullAddress.getLng(),
+                        VKApiConst.COUNT, COUNT,
+                        VKApiConst.OFFSET, offset,
+                        "radius", radius,
+                        VKApiConst.ACCESS_TOKEN, vkAccessToken.accessToken,
+                        VKApiConst.VERSION, "5.80"
+                ));
 
-            if (swipeRefreshLayout == null) {
-                progressBarGridView.setVisibility(View.VISIBLE);
-            }
-            gridViewAdapter.setLoading(true);
-            request.executeWithListener(new VKRequest.VKRequestListener() {
-                @Override
-                public void onComplete(VKResponse response) {
-                    super.onComplete(response);
-                    try {
-                        JSONObject responseObject = response.json.getJSONObject("response");
-                        Gson gson = new Gson();
-                        Type type = new TypeToken<ArrayList<VKPhoto>>() {
-                        }.getType();
-                        List<VKPhoto> vkPhotos = gson.fromJson(responseObject.getString("items"), type);
-                        if (isClearAdapter) {
-                            gridViewAdapter.clear();
-                            gridViewAdapter.notifyDataSetChanged();
-                        }
-                        if (vkPhotos == null || vkPhotos.isEmpty()) {
-                            if (gridViewAdapter.isEmpty()) {
-                                nothingFoundTextView.setVisibility(View.VISIBLE);
-                            } else {
-                                //todo: https://vk.com/bugtracker?act=show&id=72826
-                                //todo: https://vk.com/bugtracker?act=show&id=72828
-                                //todo: https://vk.com/bugtracker?act=show&id=72830
-
-                                //fixme: баг в VK API: при определенных оффсетах возвращает пустой список, притом что фотографии ещё имеются (их можно получить при других оффсетах и count)
-                                //fixme: т.о. не все фотографии выгружаются...
-                                //fixme: справедливо для сочетания полей offset и count при фиксированных других полях
-                                gridViewAdapter.setAllDownloaded(true);
-                            }
+        if (swipeRefreshLayout == null) {
+            progressBarGridView.setVisibility(View.VISIBLE);
+        }
+        gridViewAdapter.setLoading(true);
+        request.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+                try {
+                    JSONObject responseObject = response.json.getJSONObject("response");
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<ArrayList<VKPhoto>>() {
+                    }.getType();
+                    List<VKPhoto> vkPhotos = gson.fromJson(responseObject.getString("items"), type);
+                    if (vkPhotos == null || vkPhotos.isEmpty()) {
+                        if (gridViewAdapter.isEmpty()) {
+                            nothingFoundTextView.setVisibility(View.VISIBLE);
                         } else {
-                            nothingFoundTextView.setVisibility(View.GONE);
-                            offset += vkPhotos.size();
-                            //fixme: баг VK API: возвращаются дублированные фото (при определенных сочетаниях полей offset и count)
-                            //fixme: возможно, связан с багом выше
-                            for (VKPhoto vkPhoto : vkPhotos) {
-                                if (!gridViewAdapter.contains(vkPhoto)) {
-                                    gridViewAdapter.add(vkPhoto);
-                                }
+                            //todo: https://vk.com/bugtracker?act=show&id=72826
+                            //todo: https://vk.com/bugtracker?act=show&id=72828
+                            //todo: https://vk.com/bugtracker?act=show&id=72830
+
+                            //fixme: баг в VK API: при определенных оффсетах возвращает пустой список, притом что фотографии ещё имеются (их можно получить при других оффсетах и count)
+                            //fixme: т.о. не все фотографии выгружаются...
+                            //fixme: справедливо для сочетания полей offset и count при фиксированных других полях
+                            gridViewAdapter.setAllDownloaded(true);
+                        }
+                    } else {
+                        nothingFoundTextView.setVisibility(View.GONE);
+                        offset += vkPhotos.size();
+                        //fixme: баг VK API: возвращаются дублированные фото (при определенных сочетаниях полей offset и count)
+                        //fixme: возможно, связан с багом выше
+                        for (VKPhoto vkPhoto : vkPhotos) {
+                            if (!gridViewAdapter.contains(vkPhoto)) {
+                                gridViewAdapter.add(vkPhoto);
                             }
-                            gridViewAdapter.notifyDataSetChanged();
-                            if (photoPagerAdapter != null) {
-                                photoPagerAdapter.notifyDataSetChanged();
-                            }
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (swipeRefreshLayout != null) {
-                            swipeRefreshLayout.setRefreshing(false);
+                        gridViewAdapter.notifyDataSetChanged();
+                        if (photoPagerAdapter != null) {
+                            photoPagerAdapter.notifyDataSetChanged();
                         }
-                        if (swipeRefreshLayout == null) {
-                            progressBarGridView.setVisibility(View.GONE);
-                        }
-                        gridViewAdapter.setLoading(false);
                     }
-                }
-
-                @Override
-                public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
-                    super.attemptFailed(request, attemptNumber, totalAttempts);
-                }
-
-                @Override
-                public void onError(VKError error) {
-                    super.onError(error);
-                    progressBarGridView.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    } else {
+                        progressBarGridView.setVisibility(View.GONE);
+                    }
                     gridViewAdapter.setLoading(false);
-                    if (error.errorCode == VKError.VK_API_ERROR) {
-                        if (error.apiError.errorCode == 6) {
-                            Toast.makeText(gridViewAdapter.getContext(), R.string.frequent_updates, Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(gridViewAdapter.getContext(), error.apiError.toString(), Toast.LENGTH_LONG).show();
-                        }
+                }
+            }
+
+            @Override
+            public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
+                super.attemptFailed(request, attemptNumber, totalAttempts);
+            }
+
+            @Override
+            public void onError(VKError error) {
+                super.onError(error);
+                if (swipeRefreshLayout != null) {
+                    swipeRefreshLayout.setRefreshing(false);
+                } else {
+                    progressBarGridView.setVisibility(View.GONE);
+                }
+                gridViewAdapter.setLoading(false);
+                if (error.errorCode == VKError.VK_API_ERROR) {
+                    if (error.apiError.errorCode == 6) {
+                        Toast.makeText(gridViewAdapter.getContext(), R.string.frequent_updates, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(gridViewAdapter.getContext(), error.apiError.toString(), Toast.LENGTH_LONG).show();
                     }
                 }
-
-                @Override
-                public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
-                    super.onProgress(progressType, bytesLoaded, bytesTotal);
+                if (error.errorCode == VKError.VK_REQUEST_HTTP_FAILED) {
+                    Toast.makeText(gridViewAdapter.getContext(), R.string.photo_network_error, Toast.LENGTH_LONG).show();
                 }
-            });
-        }
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
+            }
+
+            @Override
+            public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
+                super.onProgress(progressType, bytesLoaded, bytesTotal);
+            }
+        });
     }
 
     /**
