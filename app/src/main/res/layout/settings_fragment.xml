@@ -65,6 +65,8 @@
             android:layout_below="@id/radiusLayout"
             android:layout_centerHorizontal="true"
             android:layout_margin="10sp"
+            android:foregroundGravity="center"
+            android:gravity="center"
             android:hint="@string/start_date"
             android:inputType="date" />
 
@@ -75,6 +77,8 @@
             android:layout_below="@id/startDateEditText"
             android:layout_centerHorizontal="true"
             android:layout_margin="10sp"
+            android:foregroundGravity="center"
+            android:gravity="center"
             android:hint="@string/end_date"
             android:inputType="date" />
 

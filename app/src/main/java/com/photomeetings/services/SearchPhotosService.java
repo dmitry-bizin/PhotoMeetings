@@ -172,7 +172,7 @@ public class SearchPhotosService implements Serializable {
     }
 
     private long toApiStartTime() {
-        return startTime / 1_000L - 24 * 60 * 60;
+        return startTime / 1_000L;
     }
 
     private long toApiEndTime() {
