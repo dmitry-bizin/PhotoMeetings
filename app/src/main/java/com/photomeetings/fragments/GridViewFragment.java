@@ -62,7 +62,6 @@ public class GridViewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        checkLocationPermission();
         View gridViewFragment = inflater.inflate(R.layout.grid_view_fragment, container, false);
         ProgressBar progressBarGridView = gridViewFragment.findViewById(R.id.progressBarGridView);
         TextView nothingFoundTextView = gridViewFragment.findViewById(R.id.nothingFoundTextView);

@@ -94,13 +94,6 @@ public class SettingsFragment extends Fragment {
         searchForCurrentPosition = view.findViewById(R.id.searchForCurrentPosition);
         searchForCurrentPosition.setChecked(SettingsService.isSearchForCurrentPosition(context));
         autoCompleteTextViewAddress.setEnabled(!searchForCurrentPosition.isChecked());
-        if (searchForCurrentPosition.isChecked()) {
-            boolean permissionGrantedFineLocation = checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            boolean permissionGrantedCoarseLocation = checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-            }
-        }
         searchForCurrentPosition.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
