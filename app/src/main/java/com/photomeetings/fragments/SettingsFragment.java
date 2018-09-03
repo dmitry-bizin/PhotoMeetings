@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.photomeetings.R;
@@ -27,6 +28,11 @@ import com.photomeetings.tasks.AsyncGeocodingTask;
 import com.photomeetings.views.DelayAutoCompleteTextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
@@ -40,6 +46,8 @@ public class SettingsFragment extends Fragment {
     private LocationListener locationListener;
     private DiscreteSeekBar discreteSeekBar;
     private Context context;
+    private EditText startTimeEditText;
+    private EditText endTimeEditText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -48,10 +56,10 @@ public class SettingsFragment extends Fragment {
         context = getContext();
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GeoLocationListener(context, locationManager);
-        discreteSeekBar = view.findViewById(R.id.discreteSeekBar);
         prepareAutoCompleteViewAddress(view);
         prepareSearchForCurrentPosition(view);
-        prepareRadius();
+        prepareRadius(view);
+        prepareEditTexts(view);
         Button buttonSave = view.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,10 +69,21 @@ public class SettingsFragment extends Fragment {
                 }
                 SettingsService.saveRadius(context, String.valueOf(discreteSeekBar.getProgress()));
                 SettingsService.saveSearchForCurrentPosition(searchForCurrentPosition.isChecked(), context);
+                SettingsService.saveStartTime(getDateFromEditText(startTimeEditText), context);
+                SettingsService.saveEndTime(getDateFromEditText(endTimeEditText), context);
                 setSettingsWasChanged(true);
             }
         });
         return view;
+    }
+
+    private long getDateFromEditText(EditText editText) {
+        try {
+            return SimpleDateFormat.getDateInstance(DateFormat.SHORT).parse(editText.getText().toString()).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;//stub
     }
 
     public boolean isSettingsWasChanged() {
@@ -137,7 +156,8 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private void prepareRadius() {
+    private void prepareRadius(View view) {
+        discreteSeekBar = view.findViewById(R.id.discreteSeekBar);
         discreteSeekBar.setProgress(Integer.parseInt(SettingsService.getRadius(context)));
     }
 
@@ -168,6 +188,13 @@ public class SettingsFragment extends Fragment {
             searchForCurrentPosition.setChecked(false);
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void prepareEditTexts(View view) {
+        startTimeEditText = view.findViewById(R.id.startDateEditText);
+        endTimeEditText = view.findViewById(R.id.endDateEditText);
+        startTimeEditText.setText(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(SettingsService.getStartTime(context))));
+        endTimeEditText.setText(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(SettingsService.getEndTime(context))));
     }
 
     @Override

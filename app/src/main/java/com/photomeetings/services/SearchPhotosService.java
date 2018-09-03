@@ -38,11 +38,16 @@ public class SearchPhotosService implements Serializable {
     private transient ProgressBar progressBarGridView;
     private GridViewAdapter gridViewAdapter;
     private TextView nothingFoundTextView;
+    private long startTime;
+    private long endTime;
 
-    public SearchPhotosService(Point fullAddress, String radius, GridViewAdapter gridViewAdapter) {
+    public SearchPhotosService(Point fullAddress, String radius, long startTime, long endTime,
+                               GridViewAdapter gridViewAdapter) {
         this.fullAddress = fullAddress;
         this.offset = 0;
         this.radius = radius;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.gridViewAdapter = gridViewAdapter;
     }
 
@@ -56,6 +61,8 @@ public class SearchPhotosService implements Serializable {
                         VKApiConst.COUNT, COUNT,
                         VKApiConst.OFFSET, offset,
                         "radius", radius,
+                        "start_time", toApiStartTime(),
+                        "end_time", toApiEndTime(),
                         VKApiConst.ACCESS_TOKEN, vkAccessToken.accessToken,
                         VKApiConst.VERSION, "5.80"
                 ));
@@ -156,10 +163,20 @@ public class SearchPhotosService implements Serializable {
         this.nothingFoundTextView = nothingFoundTextView;
     }
 
-    public void update(Point fullAddress, String radius) {
+    public void update(Point fullAddress, String radius, long startTime, long endTime) {
         this.fullAddress = fullAddress;
         this.radius = radius;
         this.offset = 0;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    private long toApiStartTime() {
+        return startTime / 1_000L - 24 * 60 * 60;
+    }
+
+    private long toApiEndTime() {
+        return endTime / 1_000L + 24 * 60 * 60;
     }
 
 }

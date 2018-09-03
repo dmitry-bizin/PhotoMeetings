@@ -21,6 +21,8 @@
     <string name="cancel">Отмена</string>
     <string name="photo_network_error">Не удалось загрузить фотографии, т.к. имеются проблемы с сетью!</string>
     <string name="geo_network_error">Не удалось получить адрес, т.к. имеются проблемы с сетью!</string>
+    <string name="start_date">Дата начала</string>
+    <string name="end_date">Дата конца</string>
     <string-array name="radiusList">
         <item>10</item>
         <item>100</item>

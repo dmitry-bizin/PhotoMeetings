@@ -54,7 +54,9 @@ public class GridViewFragment extends Fragment {
         vkPhotos = new ArrayList<>();
         gridViewAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, vkPhotos);
         photoPagerAdapter = new PhotoPagerAdapter(getFragmentManager(), vkPhotos, searchPhotosService);
-        searchPhotosService = new SearchPhotosService(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()), gridViewAdapter);
+        searchPhotosService = new SearchPhotosService(SettingsService.getFullAddress(getContext()),
+                SettingsService.getRadius(getContext()), SettingsService.getStartTime(getContext()),
+                SettingsService.getEndTime(getContext()), gridViewAdapter);
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GeoLocationListener(getContext(), locationManager);
         setHasOptionsMenu(true);
@@ -109,7 +111,9 @@ public class GridViewFragment extends Fragment {
                 if (!gridViewAdapter.isLoading()) {
                     gridViewAdapter.setAllDownloaded(false);
                     gridViewAdapter.clear();
-                    searchPhotosService.update(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()));
+                    searchPhotosService.update(SettingsService.getFullAddress(getContext()),
+                            SettingsService.getRadius(getContext()), SettingsService.getStartTime(getContext()),
+                            SettingsService.getEndTime(getContext()));
                     searchPhotosService.vkPhotos(null, swipeRefreshLayout);
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
@@ -141,7 +145,9 @@ public class GridViewFragment extends Fragment {
         if (settingsFragment.isSettingsWasChanged()) {
             settingsFragment.setSettingsWasChanged(false);
             gridViewAdapter.clear();
-            searchPhotosService.update(SettingsService.getFullAddress(getContext()), SettingsService.getRadius(getContext()));
+            searchPhotosService.update(SettingsService.getFullAddress(getContext()),
+                    SettingsService.getRadius(getContext()), SettingsService.getStartTime(getContext()),
+                    SettingsService.getEndTime(getContext()));
             searchPhotosService.vkPhotos(null, null);
         }
     }
