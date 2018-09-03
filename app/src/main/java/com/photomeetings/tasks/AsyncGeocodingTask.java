@@ -26,7 +26,7 @@ public class AsyncGeocodingTask extends AsyncTask<Void, Void, List<Point>> {
     @Override
     protected void onPostExecute(@Nullable List<Point> points) {
         if (points == null) {
-            Toast.makeText(context, R.string.photo_network_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.geo_network_error, Toast.LENGTH_LONG).show();
         } else {
             SettingsService.saveFullAddress(points.isEmpty() ? null : points.get(0), context);
         }

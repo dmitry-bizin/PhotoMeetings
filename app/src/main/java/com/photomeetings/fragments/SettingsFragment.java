@@ -23,6 +23,7 @@ import com.photomeetings.adapters.AddressAutoCompleteAdapter;
 import com.photomeetings.listeners.GeoLocationListener;
 import com.photomeetings.model.Point;
 import com.photomeetings.services.SettingsService;
+import com.photomeetings.tasks.AsyncGeocodingTask;
 import com.photomeetings.views.DelayAutoCompleteTextView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -55,6 +56,9 @@ public class SettingsFragment extends Fragment {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!searchForCurrentPosition.isChecked()) {
+                    new AsyncGeocodingTask(String.valueOf(autoCompleteTextViewAddress.getText()), context).execute();
+                }
                 SettingsService.saveRadius(context, String.valueOf(discreteSeekBar.getProgress()));
                 SettingsService.saveSearchForCurrentPosition(searchForCurrentPosition.isChecked(), context);
                 setSettingsWasChanged(true);
