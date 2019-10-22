@@ -74,7 +74,6 @@ public class SearchPhotosService implements Serializable {
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
-                super.onComplete(response);
                 try {
                     JSONObject responseObject = response.json.getJSONObject("response");
                     Gson gson = new Gson();
@@ -123,13 +122,7 @@ public class SearchPhotosService implements Serializable {
             }
 
             @Override
-            public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
-                super.attemptFailed(request, attemptNumber, totalAttempts);
-            }
-
-            @Override
             public void onError(VKError error) {
-                super.onError(error);
                 if (swipeRefreshLayout != null) {
                     swipeRefreshLayout.setRefreshing(false);
                 } else {
@@ -148,10 +141,6 @@ public class SearchPhotosService implements Serializable {
                 }
             }
 
-            @Override
-            public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
-                super.onProgress(progressType, bytesLoaded, bytesTotal);
-            }
         });
     }
 

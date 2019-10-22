@@ -37,7 +37,6 @@ public abstract class SettingsService {
     private static final String SEARCH_FOR_CURRENT_POSITION = "searchForCurrentPosition";
     private static final boolean DEFAULT_SEARCH_FOR_CURRENT_POSITION = true;
     private static final float EPS_M = 50.0f;//метры
-    private static final long DEFAULT_START_TIME = 0;
 
     public static Point getFullAddress(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
@@ -162,12 +161,12 @@ public abstract class SettingsService {
 
     public static long getStartTime(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
-        return sharedPreferences.getLong(START_TIME, DEFAULT_START_TIME);
+        return sharedPreferences.getLong(START_TIME, System.currentTimeMillis() - YEAR_IN_MILLIS);
     }
 
     public static long getEndTime(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
-        return sharedPreferences.getLong(END_TIME, System.currentTimeMillis() - YEAR_IN_MILLIS);
+        return sharedPreferences.getLong(END_TIME, System.currentTimeMillis() + YEAR_IN_MILLIS);
     }
 
     public static void saveStartTime(long startTime, Context context) {

@@ -34,7 +34,7 @@ public class VKPhoto implements Serializable {
     @SerializedName("long")
     private Float lng;
 
-    private List<Size> sizes;// массив с копиями изображения в разных размера
+    private List<Size> sizes;// массив с копиями изображения в разных размерах
 
     private transient String address;
 
