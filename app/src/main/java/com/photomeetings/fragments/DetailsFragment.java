@@ -24,7 +24,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -92,7 +94,7 @@ public class DetailsFragment extends Fragment {
     private void prepareDateTextView(View view) {
         dateTextView = view.findViewById(R.id.dateTextView);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E, dd MMMM yyyy, HH:mm:ss", Locale.getDefault());
-        dateTextView.append(simpleDateFormat.format(vkPhoto.getDate() * 1_000));
+        dateTextView.append(simpleDateFormat.format(new Date(TimeUnit.SECONDS.toMillis(vkPhoto.getDate()))));
         dateTextView.setVisibility(View.GONE);
     }
 

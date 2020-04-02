@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class GridViewAdapter extends ArrayAdapter<VKPhoto> implements Serializable {
 
@@ -53,7 +54,8 @@ public class GridViewAdapter extends ArrayAdapter<VKPhoto> implements Serializab
         VKPhoto vkPhoto = getItem(position);
         if (vkPhoto != null) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E, dd MMMM yyyy, HH:mm:ss", Locale.getDefault());
-            miniatureView.titleTextView.setText(simpleDateFormat.format(new Date(vkPhoto.getDate() * 1_000)));
+
+            miniatureView.titleTextView.setText(simpleDateFormat.format(new Date(TimeUnit.SECONDS.toMillis(vkPhoto.getDate()))));
             Picasso.get().load(vkPhoto.getPhotoForMiniature()).into(miniatureView.imageView);
         }
         return resultView;

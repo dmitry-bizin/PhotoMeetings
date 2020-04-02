@@ -9,13 +9,13 @@ public class FadePageTransformer implements ViewPager.PageTransformer {
     public void transformPage(View page, float position) {
         page.setTranslationX(page.getWidth() * -position);
 
-        if (position <= -1.0F || position >= 1.0F) {
-            page.setAlpha(0.0F);
-        } else if (position == 0.0F) {
-            page.setAlpha(1.0F);
+        if (position <= -1F || position >= 1F) {
+            page.setAlpha(0F);
+        } else if (position == 0F) {
+            page.setAlpha(1F);
         } else {
-            // position is between -1.0F & 0.0F OR 0.0F & 1.0F
-            page.setAlpha(1.0F - Math.abs(position));
+            // position is between -1F & 0F OR 0F & 1F
+            page.setAlpha(1F - Math.abs(position));
         }
     }
 
