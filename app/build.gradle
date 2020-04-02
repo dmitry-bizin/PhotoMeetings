@@ -42,5 +42,4 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.android.support:design:26.1.0'
-    implementation 'org.adw.library:discrete-seekbar:1.0.1'
 }

@@ -34,20 +34,26 @@ public class SearchPhotosService implements Serializable {
     private static final int COUNT = 100;// 100-1000
     private int offset;
     private Point fullAddress;
-    private String radius;
+    private int radius;
     private transient ProgressBar progressBarGridView;
     private GridViewAdapter gridViewAdapter;
     private TextView nothingFoundTextView;
     private long startTime;
     private long endTime;
+    private String search;
 
-    public SearchPhotosService(Point fullAddress, String radius, long startTime, long endTime,
+    public SearchPhotosService(Point fullAddress,
+                               int radius,
+                               long startTime,
+                               long endTime,
+                               String search,
                                GridViewAdapter gridViewAdapter) {
         this.fullAddress = fullAddress;
         this.offset = 0;
         this.radius = radius;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.search = search;
         this.gridViewAdapter = gridViewAdapter;
     }
 
@@ -63,6 +69,7 @@ public class SearchPhotosService implements Serializable {
                         "radius", radius,
                         "start_time", toApiStartTime(),
                         "end_time", toApiEndTime(),
+                        "q", search,
                         VKApiConst.ACCESS_TOKEN, vkAccessToken.accessToken,
                         VKApiConst.VERSION, "5.80"
                 ));
@@ -152,12 +159,13 @@ public class SearchPhotosService implements Serializable {
         this.nothingFoundTextView = nothingFoundTextView;
     }
 
-    public void update(Point fullAddress, String radius, long startTime, long endTime) {
+    public void update(Point fullAddress, int radius, long startTime, long endTime, String search) {
         this.fullAddress = fullAddress;
         this.radius = radius;
         this.offset = 0;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.search = search;
     }
 
     private long toApiStartTime() {

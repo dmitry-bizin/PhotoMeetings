@@ -54,9 +54,14 @@ public class GridViewFragment extends Fragment {
         vkPhotos = new ArrayList<>();
         gridViewAdapter = new GridViewAdapter(getActivity(), R.layout.grid_item_layout, vkPhotos);
         photoPagerAdapter = new PhotoPagerAdapter(getFragmentManager(), vkPhotos, searchPhotosService);
-        searchPhotosService = new SearchPhotosService(SettingsService.getFullAddress(getContext()),
-                SettingsService.getRadius(getContext()), SettingsService.getStartTime(getContext()),
-                SettingsService.getEndTime(getContext()), gridViewAdapter);
+        searchPhotosService = new SearchPhotosService(
+                SettingsService.getFullAddress(getContext()),
+                SettingsService.getRadius(getContext()),
+                SettingsService.getStartTime(getContext()),
+                SettingsService.getEndTime(getContext()),
+                SettingsService.getSearch(getContext()),
+                gridViewAdapter
+        );
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new GeoLocationListener(getContext(), locationManager);
         setHasOptionsMenu(true);
@@ -111,9 +116,13 @@ public class GridViewFragment extends Fragment {
                 if (!gridViewAdapter.isLoading()) {
                     gridViewAdapter.setAllDownloaded(false);
                     gridViewAdapter.clear();
-                    searchPhotosService.update(SettingsService.getFullAddress(getContext()),
-                            SettingsService.getRadius(getContext()), SettingsService.getStartTime(getContext()),
-                            SettingsService.getEndTime(getContext()));
+                    searchPhotosService.update(
+                            SettingsService.getFullAddress(getContext()),
+                            SettingsService.getRadius(getContext()),
+                            SettingsService.getStartTime(getContext()),
+                            SettingsService.getEndTime(getContext()),
+                            SettingsService.getSearch(getContext())
+                    );
                     searchPhotosService.vkPhotos(null, swipeRefreshLayout);
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
@@ -145,9 +154,13 @@ public class GridViewFragment extends Fragment {
         if (settingsFragment.isSettingsWasChanged()) {
             settingsFragment.setSettingsWasChanged(false);
             gridViewAdapter.clear();
-            searchPhotosService.update(SettingsService.getFullAddress(getContext()),
-                    SettingsService.getRadius(getContext()), SettingsService.getStartTime(getContext()),
-                    SettingsService.getEndTime(getContext()));
+            searchPhotosService.update(
+                    SettingsService.getFullAddress(getContext()),
+                    SettingsService.getRadius(getContext()),
+                    SettingsService.getStartTime(getContext()),
+                    SettingsService.getEndTime(getContext()),
+                    SettingsService.getSearch(getContext())
+            );
             searchPhotosService.vkPhotos(null, null);
         }
     }
@@ -193,10 +206,10 @@ public class GridViewFragment extends Fragment {
             boolean permissionGrantedFineLocation = grantResults[0] == PackageManager.PERMISSION_GRANTED;
             boolean permissionGrantedCoarseLocation = grantResults[1] == PackageManager.PERMISSION_GRANTED;
             if (permissionGrantedFineLocation) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1_000, Integer.parseInt(SettingsService.getRadius(getContext())), locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1_000, SettingsService.getRadius(getContext()), locationListener);
             }
             if (permissionGrantedCoarseLocation) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1_000, Integer.parseInt(SettingsService.getRadius(getContext())), locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1_000, SettingsService.getRadius(getContext()), locationListener);
             }
             if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
                 SettingsService.saveSearchForCurrentPosition(false, getContext());

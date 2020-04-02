@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 
 import com.photomeetings.R;
@@ -27,16 +28,29 @@ import com.photomeetings.services.SettingsService;
 import com.photomeetings.tasks.AsyncGeocodingTask;
 import com.photomeetings.views.DelayAutoCompleteTextView;
 
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class SettingsFragment extends Fragment {
+
+    private final Map<Integer, Integer> positionToRadius = new HashMap<>();
+    private final Map<Integer, Integer> radiusToPosition = new HashMap<>();
+
+    {
+        int[] radiuses = {100, 500, 1_000, 2_000, 5_000, 10_000, 20_000, 50_000};
+        for (int i = 1; i <= radiuses.length; i++) {
+            positionToRadius.put(i, radiuses[i - 1]);
+            radiusToPosition.put(radiuses[i - 1], i);
+        }
+    }
 
     private DelayAutoCompleteTextView autoCompleteTextViewAddress;
     private ProgressBar progressBar;
@@ -44,10 +58,11 @@ public class SettingsFragment extends Fragment {
     private CheckBox searchForCurrentPosition;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private DiscreteSeekBar discreteSeekBar;
+    private NumberPicker numberPicker;
     private Context context;
     private EditText startTimeEditText;
     private EditText endTimeEditText;
+    private EditText searchEditText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -67,10 +82,11 @@ public class SettingsFragment extends Fragment {
                 if (!searchForCurrentPosition.isChecked()) {
                     new AsyncGeocodingTask(String.valueOf(autoCompleteTextViewAddress.getText()), context).execute();
                 }
-                SettingsService.saveRadius(context, String.valueOf(discreteSeekBar.getProgress()));
+                SettingsService.saveRadius(context, positionToRadius.get(numberPicker.getValue()));
                 SettingsService.saveSearchForCurrentPosition(searchForCurrentPosition.isChecked(), context);
                 SettingsService.saveStartTime(getDateFromEditText(startTimeEditText), context);
                 SettingsService.saveEndTime(getDateFromEditText(endTimeEditText), context);
+                SettingsService.saveSearch(searchEditText.getText().toString(), context);
                 setSettingsWasChanged(true);
             }
         });
@@ -157,8 +173,16 @@ public class SettingsFragment extends Fragment {
     }
 
     private void prepareRadius(View view) {
-        discreteSeekBar = view.findViewById(R.id.discreteSeekBar);
-        discreteSeekBar.setProgress(Integer.parseInt(SettingsService.getRadius(context)));
+        numberPicker = view.findViewById(R.id.numberPicker);
+        numberPicker.setMinValue(1);
+        numberPicker.setMaxValue(radiusToPosition.size());
+        numberPicker.setValue(radiusToPosition.get(SettingsService.getRadius(context)));
+        List<Integer> radiuses = new ArrayList<>(positionToRadius.values());
+        String[] displayedValues = new String[radiuses.size()];
+        for (int i = 0; i < displayedValues.length; i++) {
+            displayedValues[i] = String.valueOf(radiuses.get(i));
+        }
+        numberPicker.setDisplayedValues(displayedValues);
     }
 
     @SuppressLint("MissingPermission")
@@ -168,10 +192,10 @@ public class SettingsFragment extends Fragment {
             boolean permissionGrantedFineLocation = grantResults[0] == PackageManager.PERMISSION_GRANTED;
             boolean permissionGrantedCoarseLocation = grantResults[1] == PackageManager.PERMISSION_GRANTED;
             if (permissionGrantedFineLocation) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1_000, Integer.parseInt(SettingsService.getRadius(context)), locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1_000, SettingsService.getRadius(context), locationListener);
             }
             if (permissionGrantedCoarseLocation) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1_000, Integer.parseInt(SettingsService.getRadius(context)), locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1_000, SettingsService.getRadius(context), locationListener);
             }
             if (!permissionGrantedFineLocation && !permissionGrantedCoarseLocation) {
                 searchForCurrentPosition.setChecked(false);
@@ -193,8 +217,10 @@ public class SettingsFragment extends Fragment {
     private void prepareEditTexts(View view) {
         startTimeEditText = view.findViewById(R.id.startDateEditText);
         endTimeEditText = view.findViewById(R.id.endDateEditText);
+        searchEditText = view.findViewById(R.id.searchEditText);
         startTimeEditText.setText(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(SettingsService.getStartTime(context))));
         endTimeEditText.setText(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(SettingsService.getEndTime(context))));
+        searchEditText.setText(SettingsService.getSearch(context));
     }
 
     @Override
