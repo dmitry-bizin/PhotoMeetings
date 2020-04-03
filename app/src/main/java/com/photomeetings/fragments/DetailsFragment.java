@@ -66,24 +66,24 @@ public class DetailsFragment extends Fragment {
 
     private void preparePhotoView(final View view) {
         photoView = view.findViewById(R.id.gridItemImage);
-        photoView.setMaximumScale(4f);
-        photoView.setMediumScale(2f);
+        photoView.setMaximumScale(4F);
+        photoView.setMediumScale(2F);
         photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
 
             @Override
             public void onPhotoTap(View view, float x, float y) {
                 if (dateTextView.getVisibility() == View.VISIBLE) {
-                    dateTextView.animate().alpha(0.0f).setDuration(250);
+                    dateTextView.animate().alpha(0F).setDuration(250);
                     dateTextView.setVisibility(View.GONE);
                 } else {
-                    dateTextView.animate().alpha(1.0f).setDuration(250);
+                    dateTextView.animate().alpha(1F).setDuration(250);
                     dateTextView.setVisibility(View.VISIBLE);
                 }
                 if (addressTextView.getVisibility() == View.VISIBLE) {
-                    addressTextView.animate().alpha(0.0f).setDuration(250);
+                    addressTextView.animate().alpha(0F).setDuration(250);
                     addressTextView.setVisibility(View.GONE);
                 } else {
-                    addressTextView.animate().alpha(1.0f).setDuration(250);
+                    addressTextView.animate().alpha(1F).setDuration(250);
                     addressTextView.setVisibility(View.VISIBLE);
                 }
             }

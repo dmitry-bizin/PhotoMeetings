@@ -71,7 +71,7 @@ public class SearchPhotosService implements Serializable {
                         "end_time", toApiEndTime(),
                         "q", search,
                         VKApiConst.ACCESS_TOKEN, vkAccessToken.accessToken,
-                        VKApiConst.VERSION, "5.80"
+                        VKApiConst.VERSION, "5.103"
                 ));
 
         if (swipeRefreshLayout == null) {
