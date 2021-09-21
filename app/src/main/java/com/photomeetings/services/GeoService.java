@@ -30,7 +30,7 @@ public abstract class GeoService {
             VKRequest request = new VKRequest("execute.getYandexGeocoderApiKey",
                     VKParameters.from(
                             VKApiConst.ACCESS_TOKEN, vkAccessToken.accessToken,
-                            VKApiConst.VERSION, "5.80"
+                            VKApiConst.VERSION, "5.81"
                     ));
             request.executeSyncWithListener(new VKRequest.VKRequestListener() {
 
